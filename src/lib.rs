@@ -93,7 +93,19 @@ pub mod stack {
                 }   
             }
         }
-        
+
+        pub fn is_empty(&self)->bool{
+            if self.count == 0{
+                true
+            }else {
+                false
+            }
+        }
+
+        pub fn peek(&self)->Option<Rc<RefCell<Node<T>>>> {
+            self.peek.clone()
+        }
+
         pub fn print_stack(&self) {
             println!("{}", self);
         }
