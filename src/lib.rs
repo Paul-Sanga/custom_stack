@@ -5,7 +5,7 @@ pub mod stack {
     use std::cell::RefCell;
 
     #[derive(Debug)]
-    struct Node<T> {
+    pub struct Node<T> {
         value: T,
         next: Option<Rc<RefCell<Node<T>>>>,
     }
@@ -67,16 +67,19 @@ pub mod stack {
             }
         }
 
-        pub fn pop(&mut self) {
+        pub fn pop(&mut self)-> Option<Rc<RefCell<Node<T>>>> {
             let mut current = self.base.clone();
             let mut prev: Option<Rc<RefCell<Node<T>>>> = None;
 
             if self.count == 0{
-                println!("stack is empty")
+                println!("stack is empty");
+                None
             }else if self.count == 1 {
+                let last_node = self.peek.clone();
                 self.base = None;
                 self.peek = None;
                 self.count -= 1;
+                last_node
             }else {
                 while let Some(node) = current.clone() {
                     if node.borrow().next.is_none(){
@@ -87,9 +90,13 @@ pub mod stack {
                     }
                 }
                 if let Some(node) = prev.clone(){
+                    let last_node = self.peek.clone();
                     node.borrow_mut().next = None;
                     self.peek = Some(Rc::clone(&node));
                     self.count -= 1;
+                    last_node
+                }else {
+                    None
                 }   
             }
         }
