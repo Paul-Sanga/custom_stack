@@ -65,3 +65,18 @@ fn test_pop() {
     assert_eq!(stack.pop(), Err(format!("Stack is empty")));
     dbg!(stack);
 }
+
+#[test]
+fn test_iter(){
+    let mut stack: Stack<u32> = Stack::new(5);
+    stack.push(5).unwrap();
+    stack.push(6).unwrap();
+    stack.push(7).unwrap();
+    stack.push(8).unwrap();
+    stack.push(9).unwrap();
+    let mut result = String::new();
+    for val in stack.iter(){
+        result.push_str(&val.to_string());
+    }
+    assert_eq!(format!("98765"), result);
+}

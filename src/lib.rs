@@ -103,4 +103,33 @@ impl<T: Copy + Display + PartialEq + PartialOrd + Debug> Stack<T> {
         self.size -= 1;
         Ok(old_top_node.as_ref().map(|old_top| old_top.borrow().value))
     }
+    pub fn iter(&self)->StackIter<T>{
+        StackIter{
+            current: self.top.clone()
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct StackIter<T> {
+    current: Option<Rc<RefCell<Node<T>>>>,
+}
+
+impl<T: Copy + Display + Debug + PartialEq + PartialOrd> Iterator for StackIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(current_node) = self.current.take() {
+            self.current = current_node
+                .borrow()
+                .prev
+                .as_ref()
+                .and_then(|prev_node| prev_node.upgrade())
+                .map(|prev_node| prev_node)
+                .clone();
+            Some(current_node.borrow().value)
+        } else {
+            None
+        }
+    }
 }
