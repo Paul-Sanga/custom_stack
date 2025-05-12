@@ -103,9 +103,9 @@ impl<T: Copy + Display + PartialEq + PartialOrd + Debug> Stack<T> {
         self.size -= 1;
         Ok(old_top_node.as_ref().map(|old_top| old_top.borrow().value))
     }
-    pub fn iter(&self)->StackIter<T>{
-        StackIter{
-            current: self.top.clone()
+    pub fn iter(&self) -> StackIter<T> {
+        StackIter {
+            current: self.top.clone(),
         }
     }
 }
@@ -131,5 +131,21 @@ impl<T: Copy + Display + Debug + PartialEq + PartialOrd> Iterator for StackIter<
         } else {
             None
         }
+    }
+}
+
+impl<T> Drop for Stack<T> {
+    fn drop(&mut self) {
+        let mut current = self.top.take();
+        while let Some(node) = current {
+            current = node
+                .borrow_mut()
+                .prev
+                .take()
+                .and_then(|next_node| next_node.upgrade())
+                .map(|next_node| next_node);
+        }
+        self.base = None;
+        self.size = 0;
     }
 }
