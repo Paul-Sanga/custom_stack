@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[cfg(test)]
 use super::*;
 
@@ -79,4 +81,20 @@ fn test_iter() {
         result.push_str(&val.to_string());
     }
     assert_eq!(format!("98765"), result);
+}
+
+#[test]
+fn test_balanced_string() {
+    let input = String::from("((A+B)+(C-D)");
+    let delimiter_pair: HashMap<char, char> =
+        HashMap::from([(')', '('), ('>', '<'), (']', '['), ('}', '{')]);
+    let mut stack: Stack<char> = Stack::new(input.len());
+    input.chars().for_each(|element| {
+        if delimiter_pair.values().any(|value| element == *value) {
+            stack.push(element).unwrap();
+        } else if let Some(_value) = delimiter_pair.get(&element) {
+            stack.pop().unwrap();
+        }
+    });
+    assert_eq!(stack.is_empty(), false);
 }
